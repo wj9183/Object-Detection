@@ -38,6 +38,11 @@ category_index = label_map_util.create_category_index_from_labelmap(PATH_TO_LABE
 # st.write(category_index)
 
 
+
+def load_image(image_file):
+    img = Image.open(image_file)
+    return img
+
 def run_inference_for_single_image(model, image):
   # 넘파이 어레이로 바꿔준다.
   image = np.asarray(image)
@@ -86,15 +91,15 @@ def show_inference(model, image_path):
     # the array based representation of the image will be used later in order to prepare the
     # result image with boxes and labels on it.
 
-    # image_np = np.array(Image.open(image_path))
-    # image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
+    image_np = np.array(Image.open(image_path))
+    image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
 
-    image_np = cv2.imread(str(image_path))
-
+    # image_np = cv2.imread(str(image_path))
+    # print(image_np)
     # Actual detection.
     output_dict = run_inference_for_single_image(model, image_np)
     # Visualization of the results of a detection.
-
+    print(output_dict)
     vis_util.visualize_boxes_and_labels_on_image_array(
         image_np,
         np.array(output_dict['detection_boxes']),
@@ -121,12 +126,21 @@ def ssd():
     # st.title("")
 
     model = keras.models.load_model("./models/ssd_mobilenet_v2_320x320_coco17_tpu-8/saved_model/")
+
+    image_file = st.file_uploader("이미지 파일 업로드", type = ['png', 'jpeg', 'jpg'], accept_multiple_files=False)
+ 
+
+    
+    if image_file is not None:
+
+      show_inference(model, image_file)
+
     # st.write(model)
-    PATH_TO_TEST_IMAGE_DIR = pathlib.Path('data/images')
-    TEST_IMAGE_PATH = sorted(  list(PATH_TO_TEST_IMAGE_DIR.glob("*.jpg"))  )
-    for image_path in TEST_IMAGE_PATH :
-        
-        show_inference(model, image_path)
+    # PATH_TO_TEST_IMAGE_DIR = pathlib.Path('data/images')
+    # TEST_IMAGE_PATH = sorted(  list(PATH_TO_TEST_IMAGE_DIR.glob("*.jpg"))  )
+    # for image_path in TEST_IMAGE_PATH :
+    #     print(image_path)
+    #     show_inference(model, image_path)
 
 
     # cv2.waitKey()
